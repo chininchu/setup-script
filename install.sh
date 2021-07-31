@@ -27,7 +27,6 @@ install-xcode(){
     echo "We need to install some commandline tools for Xcode. When you press 'Enter',"
     echo "a dialog will pop up with several options. Click the 'Install' button and wait."
     echo "Once the process completes, come back here and we will proceed with the next step."
-    wait-to-continue
 
     xcode-select --install 2>&1
 
@@ -43,29 +42,26 @@ install-java(){
     echo 'We are now going to use homebrew to install java. While your mac comes'
     echo 'with a version of java, it may not be the most recent version, and we want'
     echo 'to make sure everyone is on the same version.'
-    wait-to-continue
-	  brew install --cask zulu
+	  brew install openjdk@11
+	  brew link openjdk@11
 }
 
 install-tomcat(){
     echo 'We are now going to install tomcat, the java web server we will use for this course'
-    wait-to-continue
     brew install tomcat@9
 }
 
 install-maven(){
     echo 'We will now install maven, a build tool and dependency manager for java'
-    wait-to-continue
     brew install maven
 }
 
 install-brew(){
     echo 'We are now going to install homebrew, a package manager for OSX.'
-    wait-to-continue
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     if [[ "$(uname -m)" == "arm64" ]]; then
-      echo export PATH="/opt/homebrew/bin:${PATH}" >> .zshrc
-      source ~/.zshrc
+      echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zprofile
+      eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
 }
 
@@ -83,11 +79,23 @@ setup-ssh-keys(){
     echo "used to keep track of different keys on different servers. The comment"
     echo "will be formatted as [your name]@codeup."
 
-    while [ -z "$NAME" ]; do
-        read -rp 'Enter your name: ' NAME
+    echo "Please enter your name"
+    echo "Example: Casey Edwards"
+
+    read -p $'Enter your name: ' USERSNAME
+    read -p $'Enter the your github email: ' GITHUBEMAIL
+      while [[ ! ($GITHUBEMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$) ]];
+        do
+        echo "Invalid email"
+        echo "Please check and re-enter your email when prompted"
+        read -p $'Enter the your github email: ' GITHUBEMAIL
     done
 
-    ssh-keygen -trsa -b4096 -C "$NAME@codeup" -f "$HOME/.ssh/id_rsa" -N ''
+    git config --global user.name "$USERSNAME"
+    git config --global user.email $GITHUBEMAIL
+
+
+    ssh-keygen -trsa -b4096 -C "$USERSNAME@codeup" -f "$HOME/.ssh/id_rsa" -N ''
 
     pbcopy < "$HOME/.ssh/id_rsa.pub"
 
@@ -108,10 +116,8 @@ install-mysql(){
         echo 'use for this course.'
         echo 'We will lock down your local MySQL install so that only you can only access it'
         echo 'from this computer'
-        wait-to-continue
 
-        brew install mysql
-
+        brew install mysql@8.0
         brew link mysql --force
 
         # start the mysql server
@@ -126,12 +132,28 @@ install-mysql(){
     DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
     FLUSH PRIVILEGES;
 EOF
+
+        mysql.server stop
+
 }
 
 install-node() {
 	echo 'We are now going to install node, which lets us execute javascript outside'
 	echo 'of the browser, and gives us access to the node package manager, npm'
 	brew install node
+}
+
+script-results(){
+
+tput setaf 1
+command -v brew >/dev/null 2>&1 || { echo >&2 "BREW was not able to be installed";}
+command -v node >/dev/null 2>&1 || { echo >&2 "NODE was not able to be installed";}
+command -v java >/dev/null 2>&1 || { echo >&2 "JAVA was not able to be installed";}
+command -v mvn >/dev/null 2>&1 || { echo >&2 "MAVEN was not able to be installed";}
+brew list tomcat@9 &> /dev/null || { echo >&2 "TOMCAT-9 was not able to be installed";}
+command -v mysql >/dev/null 2>&1 || echo "MYSQL-8 was not able to be installed"
+tput sgr0
+
 }
 
 setup() {
@@ -141,9 +163,9 @@ setup() {
 	echo ''
 	echo 'All together we will be installing: '
 	echo '  - xcode tools   - brew'
-	echo '  - java          - maven'
-	echo '  - tomcat        - mysql'
-	echo '  - node          - intellij'
+	echo '  - java 11       - maven'
+	echo '  - tomcat 9      - mysql'
+	echo '  - node          - intellij ultimate'
 	echo '*Note*: if you have already setup any of the above on your computer, this script will _not_'
 	echo '        attempt to reinstall them, please talk to an instructor to ensure everything'
 	echo '        is configured properly'
@@ -151,7 +173,6 @@ setup() {
 	echo 'During this process you may be asked for your password several times. This is the password'
 	echo 'you use to log into your computer. When you type it in, you will not see any output in the'
 	echo 'terminal, this is normal.'
-	wait-to-continue
 
 	# check for xcode, brew, and ssh keys and run the relevant installer functions
 	# if they do not exist
@@ -160,7 +181,7 @@ setup() {
 	[ -f "$HOME/.ssh/id_rsa" ] || setup-ssh-keys
 
 	# check if java was installed with brew cask if not install it
-	brew list java >/dev/null 2>&1 || install-java
+	brew list java || install-java
 	# check for tomcat, maven, and mysql
 	which mvn >/dev/null || install-maven
 	which catalina >/dev/null || install-tomcat
@@ -198,7 +219,6 @@ setup() {
 
 	echo "Ok! We've gotten everything setup and you should be ready to go!"
 	echo "Good luck in class!"
-	echo
 	echo "     _____         _____           _                  _ "
 	echo "    |  __ \\       /  __ \\         | |                | |"
 	echo "    | |  \\/ ___   | /  \\/ ___   __| | ___ _   _ _ __ | |"
@@ -211,3 +231,4 @@ setup() {
 
 # delay script execution until the entire file is transferred
 setup
+script-results
