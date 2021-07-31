@@ -145,14 +145,87 @@ install-node() {
 
 script-results(){
 
+HASERRORS=false
+BREWHADERRORS=false
+NODEHADERRORS=false
+JAVAHADERRORS=false
+MAVENHADERRORS=false
+TOMCATHADERRORS=false
+MYSQLHADERRORS=false
+
 tput setaf 1
-command -v brew >/dev/null 2>&1 || { echo >&2 "BREW was not able to be installed";}
-command -v node >/dev/null 2>&1 || { echo >&2 "NODE was not able to be installed";}
-command -v java >/dev/null 2>&1 || { echo >&2 "JAVA was not able to be installed";}
-command -v mvn >/dev/null 2>&1 || { echo >&2 "MAVEN was not able to be installed";}
-brew list tomcat@9 &> /dev/null || { echo >&2 "TOMCAT-9 was not able to be installed";}
-command -v mysql >/dev/null 2>&1 || echo "MYSQL-8 was not able to be installed"
+command -v brew >/dev/null 2>&1 || { BREWHADERRORS=true; HASERRORS=true; }
+command -v node >/dev/null 2>&1 || { NODEHADERRORS=true; HASERRORS=true; }
+command -v java >/dev/null 2>&1 || { JAVAHADERRORS=true; HASERRORS=true; }
+command -v mvn >/dev/null 2>&1 || { MAVENHADERRORS=true; HASERRORS=true; }
+brew list tomcat@9 &> /dev/null || { TOMCATHADERRORS=true; HASERRORS=true; }
+command -v mysql >/dev/null 2>&1 || { MYSQLHADERRORS=true HASERRORS=true; }
 tput sgr0
+
+if [ "$HASERRORS" = false ]; then
+    tput setaf 2
+    echo "All services were installed successfully."
+    tput sgr0
+else
+  tput setaf 3
+  echo "Not all services were installed."
+  echo "Results are below"
+  tput sgr0
+  if [ "$BREWHADERRORS" = false ]; then
+    tput setaf 2
+    echo "BREW was installed successfully."
+    tput sgr0
+  else
+    tput setaf 1
+    echo "BREW was not able to be installed. Installation page can be found here https://brew.sh"
+    tput sgr0
+  fi
+  if [ "$NODEHADERRORS" = false ]; then
+    tput setaf 2
+    echo "NODE was installed successfully."
+    tput sgr0
+  else
+    tput setaf 1
+    echo "NODE was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/node#default"
+    tput sgr0
+  fi
+  if [ "$JAVAHADERRORS" = false ]; then
+    tput setaf 2
+    echo "JAVA was installed successfully."
+    tput sgr0
+  else
+    tput setaf 1
+    echo "JAVA was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/openjdk@11#default"
+    tput sgr0
+  fi
+  if [ "$MAVENHADERRORS" = false ]; then
+    tput setaf 2
+    echo "MAVEN was installed successfully."
+    tput sgr0
+  else
+    tput setaf 1
+    echo "MAVEN was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/maven#default"
+    tput sgr0
+  fi
+  if [ "$TOMCATHADERRORS" = false ]; then
+    tput setaf 2
+    echo "TOMCAT-9 was installed successfully."
+    tput sgr0
+  else
+    tput setaf 1
+    echo "TOMCAT-9 was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/tomcat@9#default"
+    tput sgr0
+  fi
+  if [ "$MYSQLHADERRORS" = false ]; then
+    tput setaf 2
+    echo "MYSQL-8 was installed successfully."
+    tput sgr0
+  else
+    tput setaf 1
+    echo "MYSQL-8 was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/mysql#default"
+    tput sgr0
+  fi
+fi
 
 }
 
@@ -227,8 +300,9 @@ setup() {
 	echo "     \\____/\\___/   \\____/\\___/ \\__,_|\\___|\\__,_| .__/(_)"
 	echo "                                               | |      "
 	echo "                                               |_|      "
+
+	script-results
 }
 
 # delay script execution until the entire file is transferred
 setup
-script-results
