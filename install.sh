@@ -159,7 +159,7 @@ command -v node >/dev/null 2>&1 || { NODEHADERRORS=true; HASERRORS=true; }
 command -v java >/dev/null 2>&1 || { JAVAHADERRORS=true; HASERRORS=true; }
 command -v mvn >/dev/null 2>&1 || { MAVENHADERRORS=true; HASERRORS=true; }
 brew list tomcat@9 &> /dev/null || { TOMCATHADERRORS=true; HASERRORS=true; }
-command -v mysql >/dev/null 2>&1 || { MYSQLHADERRORS=true HASERRORS=true; }
+command -v mysql >/dev/null 2>&1 || { MYSQLHADERRORS=true; HASERRORS=true; }
 tput sgr0
 
 if [ "$HASERRORS" = false ]; then
