@@ -227,6 +227,7 @@ else
   fi
 fi
 
+
 }
 
 setup() {
@@ -239,6 +240,7 @@ setup() {
 	echo '  - java 11       - maven'
 	echo '  - tomcat 9      - mysql'
 	echo '  - node          - intellij ultimate'
+
 	echo '*Note*: if you have already setup any of the above on your computer, this script will _not_'
 	echo '        attempt to reinstall them, please talk to an instructor to ensure everything'
 	echo '        is configured properly'
@@ -290,6 +292,8 @@ setup() {
 		git config --global core.editor nano
 	fi
 
+	set-git-config
+
 	echo "Ok! We've gotten everything setup and you should be ready to go!"
 	echo "Good luck in class!"
 	echo "     _____         _____           _                  _ "
@@ -303,6 +307,8 @@ setup() {
 
 	script-results
 }
+
+
 
 # delay script execution until the entire file is transferred
 setup
