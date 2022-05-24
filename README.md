@@ -1,6 +1,6 @@
 # Codeup Setup Script
 
-Setup script for Codeup students' laptops to install the all the tools we will
+Setup script for Codeup students' laptops to install all of the tools we will
 need for the java course. We will install the following:
 
 - [xcode](https://developer.apple.com/xcode/features/): command line tools for
