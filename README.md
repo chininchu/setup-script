@@ -31,7 +31,7 @@ bash -c "$(curl -sS https://raw.githubusercontent.com/gocodeup/codeup-setup-scri
 
 ## Note for Instructors
 
-If students already have and `id_rsa` ssh key generated the script will *not*
+If students already have an `id_rsa` ssh key generated, the script will *not*
 try to generate a new ones, and you will need to walk them through the process
 of adding their existing key to Github.
 
