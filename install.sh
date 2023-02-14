@@ -42,8 +42,8 @@ install-java(){
     echo 'We are now going to use homebrew to install java. While your mac comes'
     echo 'with a version of java, it may not be the most recent version, and we want'
     echo 'to make sure everyone is on the same version.'
-	  brew install openjdk@11
-	  brew link openjdk@11
+	  brew install openjdk@17
+	  brew link openjdk@17
 }
 
 install-tomcat(){
