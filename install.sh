@@ -195,7 +195,7 @@ else
     tput sgr0
   else
     tput setaf 1
-    echo "JAVA was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/openjdk@11#default"
+    echo "JAVA was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/openjdk@17#default"
     tput sgr0
   fi
   if [ "$MAVENHADERRORS" = false ]; then
@@ -237,7 +237,7 @@ setup() {
 	echo ''
 	echo 'All together we will be installing: '
 	echo '  - xcode tools   - brew'
-	echo '  - java 11       - maven'
+	echo '  - java 17       - maven'
 	echo '  - tomcat 9      - mysql'
 	echo '  - node          - intellij ultimate'
 
