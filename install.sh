@@ -94,11 +94,9 @@ setup-ssh-keys(){
     git config --global user.name "$USERSNAME"
     git config --global user.email $GITHUBEMAIL
 
-
-    ssh-keygen -trsa -b4096 -C "$USERSNAME@codeup" -f "$HOME/.ssh/id_rsa" -N ''
-
-    pbcopy < "$HOME/.ssh/id_rsa.pub"
-
+    ssh-keygen -t ed25519 -C "$USERSNAME@codeup" -f "$HOME/.ssh/id_ed25519"
+    pbcopy < "$HOME/.ssh/id_ed25519.pub"
+    
     echo "We've copied your ssh key to the clipboard for you. Now, we are going to take you"
     echo "to the GitHub website where you will add it as one of your keys by clicking the"
     echo '"New SSH key" button, giving the key a title (for example: Macbook-Pro), and'
