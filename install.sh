@@ -65,9 +65,10 @@ install-brew(){
     fi
 }
 
-install-intellij(){
-  echo 'We are now going to install intelliJ, Java IDE.'
-  brew install --cask intellij-idea
+install-visual-studio(){
+  echo 'We are now going to install Visual-Studio IDE.'
+  # brew install --cask intellij-idea
+  brew install --cask visual-studio-code
 }
 
 setup-ssh-keys(){
@@ -237,7 +238,7 @@ setup() {
 	echo '  - xcode tools   - brew'
 	echo '  - java 17       - maven'
 	echo '  - tomcat 9      - mysql'
-	echo '  - node          - intellij ultimate'
+	echo '  - node          - Visual-Studio'
 
 	echo '*Note*: if you have already setup any of the above on your computer, this script will _not_'
 	echo '        attempt to reinstall them, please talk to an instructor to ensure everything'
@@ -259,7 +260,10 @@ setup() {
 	which mvn >/dev/null || install-maven
 	which catalina >/dev/null || install-tomcat
 	which mysql >/dev/null || install-mysql
-	which intellij >/dev/null || install-intellij
+	# which intellij >/dev/null || install-intellij
+
+  which code >/dev/null 2>&1 || install-visual-studio
+
 	# and lastly, node
 	which node >/dev/null || install-node
 
