@@ -18,7 +18,8 @@ This script streamlines the setup of essential tools for software development on
 
 * **SSH Key Setup:** Generate and manage SSH keys for secure, passwordless authentication to remote systems (e.g., GitHub).
 * **Global Gitignore:** Customize Git's default behavior to exclude specific files or patterns from version control.
-* **Default Commit Editor:** Set your preferred text editor (e.g., nano, vim) for crafting Git commit messages.
+* **Default Commit Editor:** Setup a global gitignore file and set the default commit editor to nano (only if these are not already set).
+
 
 ## Installation
 
