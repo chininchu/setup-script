@@ -28,7 +28,7 @@ This script streamlines the setup of essential tools for software development on
 2. **Copy and paste the following command:**
 
    ```bash
-   bash -c "$(curl -sS https://raw.githubusercontent.com/chininchu/setup-script/master/install.sh)"
+   bash -c "$(curl -sS https://raw.githubusercontent.com/chininchu/setup-script/main/install.sh)"
 
 
 
