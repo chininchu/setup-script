@@ -1,39 +1,34 @@
-# Codeup Setup Script
+# Automated Software Installation Script
 
-Setup script for Codeup students' laptops to install all of the tools we will
-need for the java course. We will install the following:
+This script streamlines the setup of essential tools for software development on macOS, covering popular programming languages, development environments, and system utilities.
 
-- [xcode](https://developer.apple.com/xcode/features/): command line tools for
-  macs
-- [brew](http://brew.sh/): package manager for macs
-- [java](https://en.wikipedia.org/wiki/Java_(programming_language))
-- [tomcat](http://tomcat.apache.org/): the java webserver
-- [maven](https://maven.apache.org/): a java dependency and build management tool
-- [mysql](https://www.mysql.com/): the database we'll use for the class
-- [node js](https://nodejs.org/en/): a JavaScript runtime outside the browser
-- [npm](https://www.npmjs.com/): a package manager for JavaScript
-- [intellij](https://www.jetbrains.com/idea/): a Java IDE
+## Tools Installed
 
-In addition, we will:
+* **Xcode:** Command line tools for macOS, providing essential developer tools.
+* **Brew:** Package manager for macOS, simplifying software installation and management.
+* **Java:** Versatile programming language used for various applications.
+* **Tomcat:** Java web server for deploying and running web applications.
+* **Maven:** Java build automation and dependency management tool.
+* **MySQL:** Powerful and widely used relational database management system.
+* **Node.js:** JavaScript runtime for executing code outside web browsers.
+* **NPM:** Node Package Manager, for managing JavaScript packages and dependencies.
+* **IntelliJ:** Feature-rich integrated development environment (IDE) for Java development.
 
-- setup ssh keys for the student's laptop and guide them through the process of
-  linking their ssh key to their Github account.
-- Setup a global gitignore file and set the default commit editor to `nano`
-  (only if these are not already set)
+## Additional Configurations
 
-## For Students
+* **SSH Key Setup:** Generate and manage SSH keys for secure, passwordless authentication to remote systems (e.g., GitHub).
+* **Global Gitignore:** Customize Git's default behavior to exclude specific files or patterns from version control.
+* **Default Commit Editor:** Set your preferred text editor (e.g., nano, vim) for crafting Git commit messages.
 
-Copy and paste the following in your terminal:
+## Installation
 
-```
-bash -c "$(curl -sS https://raw.githubusercontent.com/gocodeup/codeup-setup-script/master/install.sh)"
-```
+1. **Open your terminal.**
+2. **Copy and paste the following command:**
 
-## Note for Instructors
+   ```bash
+   bash -c "$(curl -sS https://raw.githubusercontent.com/chininchu/setup-script/master/install.sh)"
 
-If students already have an `id_rsa` ssh key generated, the script will *not*
-try to generate a new ones, and you will need to walk them through the process
-of adding their existing key to Github.
+
 
 The following should do the trick if they already have a ssh key pair, but it's
 not wired up to Github.
@@ -41,4 +36,9 @@ not wired up to Github.
 ```bash
 pbcopy < ~/.ssh/id_rsa.pub
 open https://github.com/settings/ssh
+
 ```
+
+
+## Disclaimer
+**Important:** This script is intended for convenience and to automate repetitive tasks. However, it's crucial to understand that it will make changes to your system. Please review the script's contents at the provided GitHub link to ensure you're comfortable with the tools being installed and the modifications being made before running it.
