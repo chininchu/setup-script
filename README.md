@@ -14,6 +14,7 @@ This script streamlines the setup of essential tools for software development on
 * **NPM:** Node Package Manager, for managing JavaScript packages and dependencies.
 * **IntelliJ:** Feature-rich integrated development environment (IDE) for Java development.
 
+
 ## Additional Configurations
 
 * **SSH Key Setup:** Generate and manage SSH keys for secure, passwordless authentication to remote systems (e.g., GitHub).
