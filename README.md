@@ -12,7 +12,7 @@ This script streamlines the setup of essential tools for software development on
 * **MySQL:** Powerful and widely used relational database management system.
 * **Node.js:** JavaScript runtime for executing code outside web browsers.
 * **NPM:** Node Package Manager, for managing JavaScript packages and dependencies.
-* **IntelliJ:** Feature-rich integrated development environment (IDE) for Java development.
+* **Visual-Studio-Code:** Feature-rich integrated development environment (IDE) for Java development.
 
 
 ## Additional Configurations
