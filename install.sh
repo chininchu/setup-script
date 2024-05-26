@@ -23,20 +23,20 @@ wait-to-continue(){
     read -r
 }
 
-# install-xcode(){
-#     echo "We need to install some commandline tools for Xcode. When you press 'Enter',"
-#     echo "a dialog will pop up with several options. Click the 'Install' button and wait."
-#     echo "Once the process completes, come back here and we will proceed with the next step."
+install-xcode(){
+    echo "We need to install some commandline tools for Xcode. When you press 'Enter',"
+    echo "a dialog will pop up with several options. Click the 'Install' button and wait."
+    echo "Once the process completes, come back here and we will proceed with the next step."
 
-#     xcode-select --install 2>&1
+    xcode-select --install 2>&1
 
-#     # wait for xcode...
-#     while sleep 1; do
-#         xcode-select --print-path >/dev/null 2>&1 && break
-#     done
+    # wait for xcode...
+    while sleep 1; do
+        xcode-select --print-path >/dev/null 2>&1 && break
+    done
 
-#     echo
-# }
+    echo
+}
 
 install-java(){
     echo 'We are now going to use homebrew to install java. While your mac comes'
@@ -50,7 +50,7 @@ install-java(){
 
 install-tomcat(){
     echo 'We are now going to install tomcat, the java web server we will use for this course'
-    brew install tomcat@9
+    brew install tomcat
 }
 
 install-maven(){
@@ -118,7 +118,7 @@ install-mysql(){
         echo 'We will lock down your local MySQL install so that only you can only access it'
         echo 'from this computer'
 
-        brew install mysql@8.0
+        brew install mysql
         brew link mysql --force
 
         # start the mysql server
@@ -159,7 +159,7 @@ command -v brew >/dev/null 2>&1 || { BREWHADERRORS=true; HASERRORS=true; }
 command -v node >/dev/null 2>&1 || { NODEHADERRORS=true; HASERRORS=true; }
 command -v java >/dev/null 2>&1 || { JAVAHADERRORS=true; HASERRORS=true; }
 command -v mvn >/dev/null 2>&1 || { MAVENHADERRORS=true; HASERRORS=true; }
-brew list tomcat@9 &> /dev/null || { TOMCATHADERRORS=true; HASERRORS=true; }
+brew list tomcat &> /dev/null || { TOMCATHADERRORS=true; HASERRORS=true; }
 command -v mysql >/dev/null 2>&1 || { MYSQLHADERRORS=true; HASERRORS=true; }
 tput sgr0
 
@@ -264,7 +264,7 @@ setup() {
 	which mysql >/dev/null || install-mysql
 	# which intellij >/dev/null || install-intellij
 
-  which code >/dev/null 2>&1 || install-visual-studio
+  which code >/dev/null 2>&1 || install-visual-studio-code
 
 	# and lastly, node
 	which node >/dev/null || install-node
