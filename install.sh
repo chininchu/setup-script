@@ -42,8 +42,10 @@ install-java(){
     echo 'We are now going to use homebrew to install java. While your mac comes'
     echo 'with a version of java, it may not be the most recent version, and we want'
     echo 'to make sure everyone is on the same version.'
-	  brew install openjdk@17
-	  brew link openjdk@17
+	  # brew install openjdk@17
+	  # brew link openjdk@17
+    // Using this install because it is recomennded by Salesforce for dev enviroment 
+    brew install --cask temurin@17
 }
 
 install-tomcat(){
@@ -78,7 +80,7 @@ setup-ssh-keys(){
 
     echo "We will be putting a comment in the SSH key pair as well. Comments can be"
     echo "used to keep track of different keys on different servers. The comment"
-    echo "will be formatted as [your name]@codeup."
+    echo "will be formatted as [your name]."
 
     echo "Please enter your name"
     echo "Example: Casey Edwards"
