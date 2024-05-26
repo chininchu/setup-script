@@ -23,20 +23,20 @@ wait-to-continue(){
     read -r
 }
 
-install-xcode(){
-    echo "We need to install some commandline tools for Xcode. When you press 'Enter',"
-    echo "a dialog will pop up with several options. Click the 'Install' button and wait."
-    echo "Once the process completes, come back here and we will proceed with the next step."
+# install-xcode(){
+#     echo "We need to install some commandline tools for Xcode. When you press 'Enter',"
+#     echo "a dialog will pop up with several options. Click the 'Install' button and wait."
+#     echo "Once the process completes, come back here and we will proceed with the next step."
 
-    xcode-select --install 2>&1
+#     xcode-select --install 2>&1
 
-    # wait for xcode...
-    while sleep 1; do
-        xcode-select --print-path >/dev/null 2>&1 && break
-    done
+#     # wait for xcode...
+#     while sleep 1; do
+#         xcode-select --print-path >/dev/null 2>&1 && break
+#     done
 
-    echo
-}
+#     echo
+# }
 
 install-java(){
     echo 'We are now going to use homebrew to install java. While your mac comes'
@@ -252,7 +252,7 @@ setup() {
 
 	# check for xcode, brew, and ssh keys and run the relevant installer functions
 	# if they do not exist
-	xcode-select --print-path >/dev/null 2>&1 || install-xcode
+	# xcode-select --print-path >/dev/null 2>&1 || install-xcode
 	which brew >/dev/null 2>&1 || install-brew
 	[ -f "$HOME/.ssh/id_rsa" ] || setup-ssh-keys
 
