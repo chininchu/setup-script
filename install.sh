@@ -2,7 +2,7 @@
 
 # TODO: brew cask install google-chrome
 
-# Setup script for codeup student's laptops
+# Setup script for laptops
 # =========================================
 #
 # This script will
@@ -67,7 +67,7 @@ install-brew(){
     fi
 }
 
-install-visual-studio(){
+install-visual-studio-code(){
   echo 'We are now going to install Visual-Studio IDE.'
   # brew install --cask intellij-idea
   brew install --cask visual-studio-code
@@ -240,11 +240,11 @@ setup() {
 	echo '  - xcode tools   - brew'
 	echo '  - java 17       - maven'
 	echo '  - tomcat 9      - mysql'
-	echo '  - node          - Visual-Studio'
+	echo '  - node          - Visual-Studio-Code'
 
 	echo '*Note*: if you have already setup any of the above on your computer, this script will _not_'
-	echo '        attempt to reinstall them, please talk to an instructor to ensure everything'
-	echo '        is configured properly'
+	echo '        attempt to reinstall.'
+	# echo '        is configured properly'
 	echo ''
 	echo 'During this process you may be asked for your password several times. This is the password'
 	echo 'you use to log into your computer. When you type it in, you will not see any output in the'
@@ -275,14 +275,14 @@ setup() {
 		echo 'We will not modify it, but make sure you have the following values in it:'
 		echo
 		echo '	.DS_Store'
-		echo '	.idea'
+		# echo '	.idea'
 		echo '	*.iml'
 		echo
 	else
 		echo 'Setting up global gitignore file...'
 		{
 			echo '.DS_Store'
-			echo '.idea'
+			echo '.vscode'
 			echo '*.iml'
 		} >> ~/.gitignore_global
 		git config --global core.excludesfile ~/.gitignore_global
@@ -299,15 +299,13 @@ setup() {
 	set-git-config
 
 	echo "Ok! We've gotten everything setup and you should be ready to go!"
-	echo "Good luck in class!"
-	echo "     _____         _____           _                  _ "
-	echo "    |  __ \\       /  __ \\         | |                | |"
-	echo "    | |  \\/ ___   | /  \\/ ___   __| | ___ _   _ _ __ | |"
-	echo "    | | __ / _ \\  | |    / _ \\ / _  |/ _ \\ | | | '_ \\| |"
-	echo "    | |_\\ \\ (_) | | \\__/\\ (_) | (_| |  __/ |_| | |_) |_|"
-	echo "     \\____/\\___/   \\____/\\___/ \\__,_|\\___|\\__,_| .__/(_)"
-	echo "                                               | |      "
-	echo "                                               |_|      "
+  echo "Good luck!"
+
+
+
+
+
+	
 
 	script-results
 }
