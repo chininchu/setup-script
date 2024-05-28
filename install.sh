@@ -598,7 +598,7 @@ setup() {
 		echo 'We will not modify it, but make sure you have the following values in it:'
 		echo
 		echo '	.DS_Store'
-		# echo '	.idea'
+		echo '	.vscode'
 		echo '	*.iml'
 		echo
 	else
@@ -619,7 +619,7 @@ setup() {
 		git config --global core.editor nano
 	fi
 
-	set-git-config
+	# set-git-config
 
 	echo "Ok! We've gotten everything setup and you should be ready to go!. Please visit https://www.toptal.com/developers/gitignore to set up a global gitignore"
     echo "Good luck!"
