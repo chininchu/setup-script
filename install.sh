@@ -621,11 +621,12 @@ setup() {
 
 	set-git-config
 
-	echo "Ok! We've gotten everything setup and you should be ready to go!"
+	echo "Ok! We've gotten everything setup and you should be ready to go!. Please visit https://www.toptal.com/developers/gitignore to set up a global gitignore"
     echo "Good luck!"
 
 	script-results
 }
+
 
 # delay script execution until the entire file is transferred
 setup
