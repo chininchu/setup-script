@@ -13,6 +13,7 @@ This script streamlines the setup of essential tools for software development on
 * **Node.js:** JavaScript runtime for executing code outside web browsers.
 * **NPM:** Node Package Manager, for managing JavaScript packages and dependencies.
 * **Visual-Studio-Code:** Feature-rich integrated development environment (IDE) for Java development.
+* **Salesforce CLI:** Salesforce CLI (Command Line Interface) is a powerful and versatile tool designed to streamline and enhance the Salesforce development process.
 
 
 ## Additional Configurations
