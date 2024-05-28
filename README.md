@@ -12,7 +12,8 @@ This script streamlines the setup of essential tools for software development on
 * **MySQL:** Powerful and widely used relational database management system.
 * **Node.js:** JavaScript runtime for executing code outside web browsers.
 * **NPM:** Node Package Manager, for managing JavaScript packages and dependencies.
-* **IntelliJ:** Feature-rich integrated development environment (IDE) for Java development.
+* **Visual-Studio-Code:** Feature-rich integrated development environment (IDE) for Java development.
+* **Salesforce CLI:** Salesforce CLI (Command Line Interface) is a powerful and versatile tool designed to streamline and enhance the Salesforce development process.
 
 
 ## Additional Configurations
@@ -28,7 +29,7 @@ This script streamlines the setup of essential tools for software development on
 2. **Copy and paste the following command:**
 
    ```bash
-   bash -c "$(curl -sS https://raw.githubusercontent.com/chininchu/setup-script/master/install.sh)"
+   bash -c "$(curl -sS https://raw.githubusercontent.com/chininchu/setup-script/main/install.sh)"
 
 
 
