@@ -455,9 +455,6 @@ TestsResultsCache.xml
 
 # The Welkin Suite specific
 
-
-
-
 ### SalesforceDX Patch ###
 .sfdx
 
@@ -509,135 +506,42 @@ EOF
 }
 
 script-results(){
-    HASERRORS=false
-    BREWHADERRORS=false
-    NODEHADERRORS=false
-    JAVAHADERRORS=false
-    MAVENHADERRORS=false
-    TOMCATHADERRORS=false
-    MYSQLHADERRORS=false
+    echo "🔍 Checking installed tools..."
 
-    tput setaf 1
-    command -v brew >/dev/null 2>&1 || { BREWHADERRORS=true; HASERRORS=true; }
-    command -v node >/dev/null 2>&1 || { NODEHADERRORS=true; HASERRORS=true; }
-    command -v java >/dev/null 2>&1 || { JAVAHADERRORS=true; HASERRORS=true; }
-    command -v mvn >/dev/null 2>&1 || { MAVENHADERRORS=true; HASERRORS=true; }
-    brew list tomcat &> /dev/null || { TOMCATHADERRORS=true; HASERRORS=true; }
-    command -v mysql >/dev/null 2>&1 || { MYSQLHADERRORS=true; HASERRORS=true; }
-    tput sgr0
+    tools=(
+        "brew:Homebrew"
+        "node:Node.js"
+        "java:Java"
+        "mvn:Maven"
+        "catalina:Tomcat"
+        "mysql:MySQL"
+        "code:Visual Studio Code"
+        "sf:Salesforce CLI"
+    )
 
-    if [ "$HASERRORS" = false ]; then
-        tput setaf 2
-        echo "All services were installed successfully."
-        tput sgr0
+    installed=()
+    not_installed=()
+
+    for tool in "${tools[@]}"; do
+        IFS=":" read -r command name <<< "$tool"
+        if command -v $command >/dev/null 2>&1; then
+            installed+=("$name")
+        else
+            not_installed+=("$name")
+        fi
+    done
+
+    echo "✅ Successfully installed:"
+    printf "   %s\n" "${installed[@]}"
+
+    if [ ${#not_installed[@]} -eq 0 ]; then
+        echo "🎉 Great job! All tools are present and accounted for!"
     else
-        tput setaf 3
-        echo "Not all services were installed."
-        echo "Results are below"
-        tput sgr0
-        if [ "$BREWHADERRORS" = false ]; then
-            tput setaf 2
-            echo "BREW was installed successfully."
-            tput sgr0
-        else
-            tput setaf 1
-            echo "BREW was not able to be installed. Installation page can be found here https://brew.sh"
-            tput sgr0
-        fi
-        if [ "$NODEHADERRORS" = false ]; then
-            tput setaf 2
-            echo "NODE was installed successfully."
-            tput sgr0
-        else
-            tput setaf 1
-            echo "NODE was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/node#default"
-            tput sgr0
-        fi
-        if [ "$JAVAHADERRORS" = false ]; then
-            tput setaf 2
-            echo "JAVA was installed successfully."
-            tput sgr0
-        else
-            tput setaf 1
-            echo "JAVA was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/openjdk@17#default"
-            tput sgr0
-        fi
-        if [ "$MAVENHADERRORS" = false ]; then
-            tput setaf 2
-            echo "MAVEN was installed successfully."
-            tput sgr0
-        else
-            tput setaf 1
-            echo "MAVEN was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/maven#default"
-            tput sgr0
-        fi
-        if [ "$TOMCATHADERRORS" = false ]; then
-            tput setaf 2
-            echo "TOMCAT-9 was installed successfully."
-            tput sgr0
-        else
-            tput setaf 1
-            echo "TOMCAT-9 was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/tomcat@9#default"
-            tput sgr0
-        fi
-        if [ "$MYSQLHADERRORS" = false ]; then
-            tput setaf 2
-            echo "MYSQL-8 was installed successfully."
-            tput sgr0
-        else
-            tput setaf 1
-            echo "MYSQL-8 was not able to be installed. Installation page can be found here https://formulae.brew.sh/formula/mysql#default"
-            tput sgr0
-        fi
-    fi
-}
-
-setup() {
-    echo 'We are going to check if xcode and brew are installed, and if you have ssh keys setup.'
-    echo 'We will then setup our java development environment, including installing MySQL,'
-    echo 'and a mild bit of git configuration.'
-    echo ''
-    echo 'All together we will be installing: '
-    echo '  - xcode tools   - brew'
-    echo '  - java 17       - maven'
-    echo '  - tomcat 9      - mysql'
-    echo '  - node.js (includes npm)  - Visual Studio Code'
-    echo '  - Salesforce CLI'
-
-    echo '*Note*: if you have already setup any of the above on your computer, this script will _not_'
-    echo '        attempt to reinstall.'
-    echo ''
-    echo 'During this process you may be asked for your password several times. This is the password'
-    echo 'you use to log into your computer. When you type it in, you will not see any output in the'
-    echo 'terminal, this is normal.'
-
-    which brew >/dev/null 2>&1 || install-brew
-    [ -f "$HOME/.ssh/id_rsa" ] || setup-ssh-keys
-
-    brew list java || install-java
-    which mvn >/dev/null || install-maven
-    which catalina >/dev/null || install-tomcat
-    which mysql >/dev/null || install-mysql
-
-    which code >/dev/null 2>&1 || install-visual-studio-code
-
-    which node >/dev/null || install-node
-
-    setup-global-gitignore
-
-    if git config --global core.editor >/dev/null ; then
-        echo 'It looks like you already have a preferred editor setup for git'
-        echo 'We will not modify this.'
-    else
-        echo 'Setting default git editor to nano...'
-        git config --global core.editor nano
+        echo "❗ The following tools were not installed or not found:"
+        printf "   %s\n" "${not_installed[@]}"
+        echo "You might want to install these manually or re-run the script."
     fi
 
-    echo "Ok! We've gotten everything setup and you should be ready to go!"
-    echo "Good luck!"
-
-    script-results
-}
-
-# Run the setup function
-setup
+    echo "
+💡 Pro Tip: Remember to set up your global .gitignore file!
+   Visit https://www.toptal.com/developers
