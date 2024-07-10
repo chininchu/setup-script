@@ -69,7 +69,6 @@ install-brew(){
 
 install-visual-studio-code(){
   echo 'We are now going to install Visual-Studio IDE.'
-  # brew install --cask intellij-idea
   brew install --cask visual-studio-code
 }
 
@@ -240,11 +239,12 @@ setup() {
 	echo 'We will then setup our java development environment, including installing MySQL,'
 	echo 'and a mild bit of git configuration.'
 	echo ''
-	echo 'All together we will be installing: '
-	echo '  - xcode tools   - brew'
-	echo '  - java 17       - maven'
-	echo '  - tomcat 9      - mysql'
-	echo '  - node          - Visual-Studio-Code'
+  echo 'All together we will be installing: '
+  echo '  - xcode tools   - brew'
+  echo '  - java 17       - maven'
+  echo '  - tomcat 9      - mysql'
+  echo '  - node.js (includes npm)  - Visual Studio Code'
+  echo '  - Salesforce CLI'
 
 	echo '*Note*: if you have already setup any of the above on your computer, this script will _not_'
 	echo '        attempt to reinstall.'
