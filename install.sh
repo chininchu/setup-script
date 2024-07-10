@@ -542,6 +542,60 @@ script-results(){
         echo "You might want to install these manually or re-run the script."
     fi
 
-    echo "
+
+
+   echo "
 💡 Pro Tip: Remember to set up your global .gitignore file!
-   Visit https://www.toptal.com/developers
+   Visit https://www.toptal.com/developers/gitignore for a great starting point.
+    "
+}
+
+setup() {
+    echo 'We are going to check if xcode and brew are installed, and if you have ssh keys setup.'
+    echo 'We will then setup our java development environment, including installing MySQL,'
+    echo 'and a mild bit of git configuration.'
+    echo ''
+    echo 'All together we will be installing: '
+    echo '  - xcode tools   - brew'
+    echo '  - java 17       - maven'
+    echo '  - tomcat 9      - mysql'
+    echo '  - node.js (includes npm)  - Visual Studio Code'
+    echo '  - Salesforce CLI'
+
+    echo '*Note*: if you have already setup any of the above on your computer, this script will _not_'
+    echo '        attempt to reinstall.'
+    echo ''
+    echo 'During this process you may be asked for your password several times. This is the password'
+    echo 'you use to log into your computer. When you type it in, you will not see any output in the'
+    echo 'terminal, this is normal.'
+
+    which brew >/dev/null 2>&1 || install-brew
+    [ -f "$HOME/.ssh/id_rsa" ] || setup-ssh-keys
+
+    brew list java || install-java
+    which mvn >/dev/null || install-maven
+    which catalina >/dev/null || install-tomcat
+    which mysql >/dev/null || install-mysql
+
+    which code >/dev/null 2>&1 || install-visual-studio-code
+
+    which node >/dev/null || install-node
+
+    setup-global-gitignore
+
+    if git config --global core.editor >/dev/null ; then
+        echo 'It looks like you already have a preferred editor setup for git'
+        echo 'We will not modify this.'
+    else
+        echo 'Setting default git editor to nano...'
+        git config --global core.editor nano
+    fi
+
+    echo "🎊 Setup complete! You're ready to start coding!"
+    echo "🌟 Good luck on your development journey!"
+
+    script-results
+}
+
+# Run the setup
+setup
