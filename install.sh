@@ -17,13 +17,13 @@
 # 7. install node with brew
 # 8. setup a comprehensive global gitignore file and set the default commit editor to nano
 
-wait-to-continue(){
+wait-to-continue() {
     echo
     echo 'Press Enter to continue or Ctrl-C to exit'
     read -r
 }
 
-install-xcode(){
+install-xcode() {
     if xcode-select -p &>/dev/null; then
         echo "Xcode Command Line Tools are already installed."
     else
@@ -41,19 +41,19 @@ install-xcode(){
     echo
 }
 
-install-java(){
+install-java() {
     if java -version 2>&1 | grep -q "version \"17"; then
         echo "Java 17 is already installed."
     else
         echo 'We are now going to use homebrew to install java. While your mac comes'
         echo 'with a version of java, it may not be the most recent version, and we want'
         echo 'to make sure everyone is on the same version.'
-        # Using this install because it is recommended by Salesforce for dev environment 
+        # Using this install because it is recommended by Salesforce for dev environment
         brew install --cask temurin@17
     fi
 }
 
-install-tomcat(){
+install-tomcat() {
     if brew list tomcat &>/dev/null; then
         echo "Tomcat is already installed."
     else
@@ -62,7 +62,7 @@ install-tomcat(){
     fi
 }
 
-install-maven(){
+install-maven() {
     if command -v mvn &>/dev/null; then
         echo "Maven is already installed."
     else
@@ -71,20 +71,20 @@ install-maven(){
     fi
 }
 
-install-brew(){
+install-brew() {
     if command -v brew &>/dev/null; then
         echo "Homebrew is already installed."
     else
         echo 'We are now going to install homebrew, a package manager for OSX.'
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         if [[ "$(uname -m)" == "arm64" ]]; then
-          echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zprofile
-          eval "$(/opt/homebrew/bin/brew shellenv)"
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>$HOME/.zprofile
+            eval "$(/opt/homebrew/bin/brew shellenv)"
         fi
     fi
 }
 
-install-visual-studio-code(){
+install-visual-studio-code() {
     if command -v code &>/dev/null; then
         echo "Visual Studio Code is already installed."
     else
@@ -93,7 +93,7 @@ install-visual-studio-code(){
     fi
 }
 
-setup-ssh-keys(){
+setup-ssh-keys() {
     if [ -f "$HOME/.ssh/id_ed25519" ]; then
         echo "SSH key already exists."
     else
@@ -110,8 +110,7 @@ setup-ssh-keys(){
 
         read -p $'Enter your name: ' USERSNAME
         read -p $'Enter your github email: ' GITHUBEMAIL
-          while [[ ! ($GITHUBEMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$) ]];
-            do
+        while [[ ! ($GITHUBEMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$) ]]; do
             echo "Invalid email"
             echo "Please check and re-enter your email when prompted"
             read -p $'Enter your github email: ' GITHUBEMAIL
@@ -121,8 +120,8 @@ setup-ssh-keys(){
         git config --global user.email $GITHUBEMAIL
 
         ssh-keygen -t ed25519 -C "$USERSNAME" -f "$HOME/.ssh/id_ed25519"
-        pbcopy < "$HOME/.ssh/id_ed25519.pub"
-        
+        pbcopy <"$HOME/.ssh/id_ed25519.pub"
+
         echo "We've copied your ssh key to the clipboard for you. Now, we are going to take you"
         echo "to the GitHub website where you will add it as one of your keys by clicking the"
         echo '"New SSH key" button, giving the key a title (for example: Macbook-Pro), and'
@@ -136,7 +135,7 @@ setup-ssh-keys(){
     fi
 }
 
-install-mysql(){
+install-mysql() {
     if command -v mysql &>/dev/null; then
         echo "MySQL is already installed."
     else
@@ -173,7 +172,7 @@ install-node() {
         echo 'of the browser, and gives us access to the node package manager, npm'
         brew install node
     fi
-    
+
     # Check for Salesforce CLI
     if command -v sf &>/dev/null; then
         echo "Salesforce CLI is already installed."
@@ -189,369 +188,367 @@ setup-global-gitignore() {
         echo "Global .gitignore file already exists."
     else
         echo 'Setting up comprehensive global gitignore file...'
-        cat << 'EOF' > ~/.gitignore_global
-        # Created by https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
-        # Edit at https://www.toptal.com/developers/gitignore?templates=macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
-
-        ### Git ###
-        # Created by git for backups. To disable backups in Git:
-        # $ git config --global mergetool.keepBackup false
-        *.orig
-
-        # Created by git when using merge tools for conflicts
-        *.BACKUP.*
-        *.BASE.*
-    *.LOCAL.*
-    *.REMOTE.*
-    *_BACKUP_*.txt
-    *_BASE_*.txt
-    *_LOCAL_*.txt
-    *_REMOTE_*.txt
-
-    ### Homebrew ###
-    Brewfile.lock.json
-
-    ### Java ###
-    # Compiled class file
-    *.class
-
-    # Log file
-    *.log
-
-    # BlueJ files
-    *.ctxt
-
-    # Mobile Tools for Java (J2ME)
-    .mtj.tmp/
-
-    # Package Files #
-    *.jar
-    *.war
-    *.nar
-    *.ear
-    *.zip
-    *.tar.gz
-    *.rar
-
-    # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-    hs_err_pid*
-    replay_pid*
-
-    ### macOS ###
-    # General
-    .DS_Store
-    .AppleDouble
-    .LSOverride
-
-    # Icon must end with two \r
-    Icon
-
-
-    # Thumbnails
-    ._*
-
-    # Files that might appear in the root of a volume
-    .DocumentRevisions-V100
-    .fseventsd
-    .Spotlight-V100
-    .TemporaryItems
-    .Trashes
-    .VolumeIcon.icns
-    .com.apple.timemachine.donotpresent
-
-    # Directories potentially created on remote AFP share
-    .AppleDB
-    .AppleDesktop
-    Network Trash Folder
-    Temporary Items
-    .apdisk
-
-    ### macOS Patch ###
-    # iCloud generated files
-    *.icloud
-
-    ### Maven ###
-    target/
-    pom.xml.tag
-    pom.xml.releaseBackup
-    pom.xml.versionsBackup
-    pom.xml.next
-    release.properties
-    dependency-reduced-pom.xml
-    buildNumber.properties
-    .mvn/timing.properties
-    # https://github.com/takari/maven-wrapper#usage-without-binary-jar
-    .mvn/wrapper/maven-wrapper.jar
-
-    # Eclipse m2e generated files
-    # Eclipse Core
-    .project
-    # JDT-specific (Eclipse Java Development Tools)
-    .classpath
-
-    ### Node ###
-    # Logs
-    logs
-    npm-debug.log*
-    yarn-debug.log*
-    yarn-error.log*
-    lerna-debug.log*
-    .pnpm-debug.log*
+        cat <<'EOF' >~/.gitignore_global
+# Created by https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
+
+### Git ###
+# Created by git for backups. To disable backups in Git:
+# $ git config --global mergetool.keepBackup false
+*.orig
+
+# Created by git when using merge tools for conflicts
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+*_BACKUP_*.txt
+*_BASE_*.txt
+*_LOCAL_*.txt
+*_REMOTE_*.txt
+
+### Homebrew ###
+Brewfile.lock.json
+
+### Java ###
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+replay_pid*
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### macOS Patch ###
+# iCloud generated files
+*.icloud
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse m2e generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+### Node ###
+# Logs
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
 
-    # Diagnostic reports (https://nodejs.org/api/report.html)
-    report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-    # Runtime data
-    pids
-    *.pid
-    *.seed
-    *.pid.lock
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-    # Directory for instrumented libs generated by jscoverage/JSCover
-    lib-cov
+# Directory for instrumented libs generated by jscoverage/JSCover
+lib-cov
 
-    # Coverage directory used by tools like istanbul
-    coverage
-    *.lcov
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
 
-    # nyc test coverage
-    .nyc_output
+# nyc test coverage
+.nyc_output
 
-    # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
-    .grunt
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
 
-    # Bower dependency directory (https://bower.io/)
-    bower_components
+# Bower dependency directory (https://bower.io/)
+bower_components
 
-    # node-waf configuration
-    .lock-wscript
+# node-waf configuration
+.lock-wscript
 
-    # Compiled binary addons (https://nodejs.org/api/addons.html)
-    build/Release
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
 
-    # Dependency directories
-    node_modules/
-    jspm_packages/
+# Dependency directories
+node_modules/
+jspm_packages/
 
-    # Snowpack dependency directory (https://snowpack.dev/)
-    web_modules/
+# Snowpack dependency directory (https://snowpack.dev/)
+web_modules/
 
-    # TypeScript cache
-    *.tsbuildinfo
+# TypeScript cache
+*.tsbuildinfo
 
-    # Optional npm cache directory
-    .npm
+# Optional npm cache directory
+.npm
 
-    # Optional eslint cache
-    .eslintcache
+# Optional eslint cache
+.eslintcache
 
-    # Optional stylelint cache
-    .stylelintcache
-
-    # Microbundle cache
-    .rpt2_cache/
-    .rts2_cache_cjs/
-    .rts2_cache_es/
-    .rts2_cache_umd/
-
-    # Optional REPL history
-    .node_repl_history
-
-    # Output of 'npm pack'
-    *.tgz
-
-    # Yarn Integrity file
-    .yarn-integrity
-
-    # dotenv environment variable files
-    .env
-    .env.development.local
-    .env.test.local
-    .env.production.local
-    .env.local
-
-    # parcel-bundler cache (https://parceljs.org/)
-    .cache
-    .parcel-cache
-
-    # Next.js build output
-    .next
-    out
-
-    # Nuxt.js build / generate output
-    .nuxt
-    dist
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out
+
+# Nuxt.js build / generate output
+.nuxt
+dist
 
-    # Gatsby files
-    .cache/
-    # Comment in the public line in if your project uses Gatsby and not Next.js
-    # https://nextjs.org/blog/next-9-1#public-directory-support
-    # public
+# Gatsby files
+.cache/
+# Comment in the public line in if your project uses Gatsby and not Next.js
+# https://nextjs.org/blog/next-9-1#public-directory-support
+# public
 
-    # vuepress build output
-    .vuepress/dist
+# vuepress build output
+.vuepress/dist
 
-    # vuepress v2.x temp and cache directory
-    .temp
+# vuepress v2.x temp and cache directory
+.temp
 
-    # Docusaurus cache and generated files
-    .docusaurus
+# Docusaurus cache and generated files
+.docusaurus
 
-    # Serverless directories
-    .serverless/
+# Serverless directories
+.serverless/
 
-    # FuseBox cache
-    .fusebox/
+# FuseBox cache
+.fusebox/
 
-    # DynamoDB Local files
-    .dynamodb/
+# DynamoDB Local files
+.dynamodb/
 
-    # TernJS port file
-    .tern-port
+# TernJS port file
+.tern-port
 
-    # Stores VSCode versions used for testing VSCode extensions
-    .vscode-test
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
 
-    # yarn v2
-    .yarn/cache
-    .yarn/unplugged
-    .yarn/build-state.yml
-    .yarn/install-state.gz
-    .pnp.*
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
 
-    ### Node Patch ###
-    # Serverless Webpack directories
-    .webpack/
+### Node Patch ###
+# Serverless Webpack directories
+.webpack/
 
-    # Optional stylelint cache
+# Optional stylelint cache
 
-    # SvelteKit build / generate output
-    .svelte-kit
+# SvelteKit build / generate output
+.svelte-kit
 
-    ### Salesforce ###
-    # GitIgnore for Salesforce Projects
-    # Project Settings and MetaData
-    .settings/
-    .metadata
-    build.properties
-    config
+### Salesforce ###
+# GitIgnore for Salesforce Projects
+# Project Settings and MetaData
+.settings/
+.metadata
+build.properties
+config
 
-    # Apex Log as optional
-    apex-scripts/log
+# Apex Log as optional
+apex-scripts/log
 
-    # Eclipse specific
-    salesforce.schema
-    Referenced Packages
-    bin/
-    tmp/
-    config/
-    *.tmp
-    *.bak
-    local.properties
-    .settings
-    .loadpath
-    *.cache
+# Eclipse specific
+salesforce.schema
+Referenced Packages
+bin/
+tmp/
+config/
+*.tmp
+*.bak
+local.properties
+.settings
+.loadpath
+*.cache
 
-    # Illuminated Cloud (IntelliJ IDEA)
-    IlluminatedCloud
-    .idea
-    *.iml
+# Illuminated Cloud (IntelliJ IDEA)
+IlluminatedCloud
+.idea
+*.iml
 
-    # Mavensmate
-    *.sublime-project
-    *.sublime-settings
-    *.sublime-workspace
-    mm.log
+# Mavensmate
+*.sublime-project
+*.sublime-settings
+*.sublime-workspace
+mm.log
 
-    # Haoide SublimeText
-    .config
-    .deploy
-    .history
+# Haoide SublimeText
+.config
+.deploy
+.history
 
-    # OSX-specific exclusions
-    .[dD][sS]_[sS]tore
+# OSX-specific exclusions
+.[dD][sS]_[sS]tore
 
-    # The Welkin Suite specific
-    **/.localHistory
+# The Welkin Suite specific
+**/.localHistory
 
-    *.sfuo
+*.sfuo
 
-    TestCache.xml
+TestCache.xml
 
-    TestsResultsCache.xml
+TestsResultsCache.xml
 
-    ### SalesforceDX ###
-    # GitIgnore for Salesforce Projects
-    # Project Settings and MetaData
+### SalesforceDX ###
+# GitIgnore for Salesforce Projects
+# Project Settings and MetaData
 
-    # Apex Log as optional
+# Apex Log as optional
 
-    # Eclipse specific
+# Eclipse specific
 
-    # Illuminated Cloud (IntelliJ IDEA)
+# Illuminated Cloud (IntelliJ IDEA)
 
-    # Mavensmate
+# Mavensmate
 
-    # Haoide SublimeText
+# Haoide SublimeText
 
-    # OSX-specific exclusions
+# OSX-specific exclusions
 
-    # The Welkin Suite specific
+# The Welkin Suite specific
 
-    ### SalesforceDX Patch ###
-    .sfdx
+### SalesforceDX Patch ###
+.sfdx
 
-    ### SSH ###
-    **/.ssh/id_*
-    **/.ssh/*_id_*
-    **/.ssh/known_hosts
+### SSH ###
+**/.ssh/id_*
+**/.ssh/*_id_*
+**/.ssh/known_hosts
 
-    ### VisualStudioCode ###
-    .vscode/*
-    !.vscode/settings.json
-    !.vscode/tasks.json
-    !.vscode/launch.json
-    !.vscode/extensions.json
-    !.vscode/*.code-snippets
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
 
-    # Local History for Visual Studio Code
-    .history/
+# Local History for Visual Studio Code
+.history/
 
-    # Built Visual Studio Code Extensions
-    *.vsix
+# Built Visual Studio Code Extensions
+*.vsix
 
-    ### VisualStudioCode Patch ###
-    # Ignore all local history of files
-    .ionide
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.ionide
 
-    ### Xcode ###
-    ## User settings
-    xcuserdata/
+### Xcode ###
+## User settings
+xcuserdata/
 
-    ## Xcode 8 and earlier
-    *.xcscmblueprint
-    *.xccheckout
+## Xcode 8 and earlier
+*.xcscmblueprint
+*.xccheckout
 
-    ### Xcode Patch ###
-    *.xcodeproj/*
-    !*.xcodeproj/project.pbxproj
-    !*.xcodeproj/xcshareddata/
-    !*.xcodeproj/project.xcworkspace/
-    !*.xcworkspace/contents.xcworkspacedata
-    /*.gcno
-    **/xcshareddata/WorkspaceSettings.xcsettings
+### Xcode Patch ###
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
+**/xcshareddata/WorkspaceSettings.xcsettings
 
-    # End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git  
-}
-
+# End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
 EOF
 
-git config --global core.excludesfile ~/.gitignore_global
-echo 'Global .gitignore file has been set up with comprehensive rules.'
+        git config --global core.excludesfile ~/.gitignore_global
+        echo 'Global .gitignore file has been set up with comprehensive rules.'
+    fi
+}
 
-
-
-script-results(){
+script-results() {
     echo "🔍 Checking installed tools..."
 
     tools=(
@@ -569,7 +566,7 @@ script-results(){
     not_installed=()
 
     for tool in "${tools[@]}"; do
-        IFS=":" read -r command name <<< "$tool"
+        IFS=":" read -r command name <<<"$tool"
         if command -v $command >/dev/null 2>&1; then
             installed+=("$name")
         else
@@ -625,7 +622,7 @@ setup() {
     install-node
     setup-global-gitignore
 
-    if git config --global core.editor >/dev/null ; then
+    if git config --global core.editor >/dev/null; then
         echo 'It looks like you already have a preferred editor setup for git.'
         echo 'We will not modify this.'
     else
@@ -641,4 +638,3 @@ setup() {
 
 # Run the setup
 setup
-
