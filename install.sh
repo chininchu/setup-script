@@ -570,4 +570,5 @@ script-results() {
         log "You might want to install these manually or re-run the script."
     fi
 
-     log "💡 Pro Tip: Remember to set up your global .gitignore file!"
+    log "💡 Pro Tip: Remember to set up your global .gitignore file!"
+    
