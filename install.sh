@@ -1,150 +1,159 @@
 #!/bin/bash
 
-# Comprehensive setup script for MacOS development environment
-# ============================================================
+# TODO: brew cask install google-chrome
 
-set -e # Exit immediately if a command exits with a non-zero status
-trap 'echo "An error occurred. Exiting..."; exit 1' ERR
+# Setup script for laptops
+# =========================================
+#
+# This script will
+#
+# 1. check for xcode, if it does not exist go ahead and install it
+# 2. do the same for brew
+# 3. if $HOME/.ssh/id_rsa does not exist, generate ssh keys and open github so
+#    they can be configured there
+# 4. install java with brew cask
+# 5. check for maven and tomcat, install them with brew if not present
+# 6. check for mysql, install it and configure if not present
+# 7. install node with brew
+# 8. setup a comprehensive global gitignore file and set the default commit editor to nano
 
-# Logging function
-log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a setup.log
-}
-
-# Progress spinner
-show_spinner() {
-    local pid=$1
-    local delay=0.1
-    local spinstr='|/-\'
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
-    done
-    printf "    \b\b\b\b"
-}
-
-# Backup function
-backup_configs() {
-    log "Backing up configurations..."
-    [ -f ~/.gitconfig ] && cp ~/.gitconfig ~/.gitconfig.bak
-    [ -f ~/.zshrc ] && cp ~/.zshrc ~/.zshrc.bak
-    # Add more backup commands as needed
-}
-
-# Cleanup function
-cleanup() {
-    log "Cleaning up..."
-    # Add cleanup commands here
-}
-trap cleanup EXIT
-
-# Load user configurations
-[ -f ~/.setup_config ] && source ~/.setup_config
-
-# Default configurations
-JAVA_VERSION=${JAVA_VERSION:-17}
-TOMCAT_VERSION=${TOMCAT_VERSION:-9}
-
-wait-to-continue() {
+wait-to-continue(){
     echo
     echo 'Press Enter to continue or Ctrl-C to exit'
     read -r
 }
 
-check_system_requirements() {
-    log "Checking system requirements..."
-    # Check available disk space
-    local available_space=$(df -h / | awk 'NR==2 {print $4}')
-    if [[ ${available_space%G} -lt 10 ]]; then
-        log "Warning: Less than 10GB of free space available. Some installations may fail."
-    fi
-    # Add more system checks as needed
-}
-
-install-xcode() {
-    log "Installing Xcode Command Line Tools..."
-    xcode-select --install 2>&1 || true
-    while sleep 1; do
-        xcode-select --print-path >/dev/null 2>&1 && break
-    done
-    log "Xcode Command Line Tools installed successfully."
-}
-
-install-brew() {
-    log "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" &
-    show_spinner $!
-    if [[ "$(uname -m)" == "arm64" ]]; then
-        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>$HOME/.zprofile
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-    fi
-    log "Homebrew installed successfully."
-}
-
-update_brew() {
-    log "Updating Homebrew..."
-    brew update && brew upgrade
-    log "Homebrew updated successfully."
-}
-
-setup-ssh-keys() {
-    log "Setting up SSH keys..."
-    read -p $'Enter your name: ' USERSNAME
-    read -p $'Enter your github email: ' GITHUBEMAIL
-    while [[ ! ($GITHUBEMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$) ]]; do
-        echo "Invalid email"
-        read -p $'Enter your github email: ' GITHUBEMAIL
-    done
-
-    git config --global user.name "$USERSNAME"
-    git config --global user.email $GITHUBEMAIL
-
-    ssh-keygen -t ed25519 -C "$USERSNAME" -f "$HOME/.ssh/id_ed25519"
-    pbcopy <"$HOME/.ssh/id_ed25519.pub"
-
-    log "SSH key generated and copied to clipboard."
-    open https://github.com/settings/ssh
-    wait-to-continue
-}
-
-install-java() {
-    log "Installing Java ${JAVA_VERSION}..."
-    brew install --cask temurin@${JAVA_VERSION}
-    log "Java ${JAVA_VERSION} installed successfully."
-}
-
-check_java_version() {
-    if java -version 2>&1 | grep -q "version \"${JAVA_VERSION}"; then
-        log "Java ${JAVA_VERSION} is already installed."
+install-xcode(){
+    if xcode-select -p &>/dev/null; then
+        echo "Xcode Command Line Tools are already installed."
     else
-        log "Java ${JAVA_VERSION} is not installed. Installing..."
-        install-java
+        echo "We need to install some commandline tools for Xcode. When you press 'Enter',"
+        echo "a dialog will pop up with several options. Click the 'Install' button and wait."
+        echo "Once the process completes, come back here and we will proceed with the next step."
+
+        xcode-select --install 2>&1
+
+        # wait for xcode...
+        while sleep 1; do
+            xcode-select --print-path >/dev/null 2>&1 && break
+        done
+    fi
+    echo
+}
+
+install-java(){
+    if java -version 2>&1 | grep -q "version \"17"; then
+        echo "Java 17 is already installed."
+    else
+        echo 'We are now going to use homebrew to install java. While your mac comes'
+        echo 'with a version of java, it may not be the most recent version, and we want'
+        echo 'to make sure everyone is on the same version.'
+        # Using this install because it is recommended by Salesforce for dev environment 
+        brew install --cask temurin@17
     fi
 }
 
-install-tomcat() {
-    log "Installing Tomcat ${TOMCAT_VERSION}..."
-    brew install tomcat@${TOMCAT_VERSION}
-    log "Tomcat ${TOMCAT_VERSION} installed successfully."
+install-tomcat(){
+    if brew list tomcat &>/dev/null; then
+        echo "Tomcat is already installed."
+    else
+        echo 'We are now going to install tomcat, the java web server we will use for this course'
+        brew install tomcat
+    fi
 }
 
-install-maven() {
-    log "Installing Maven..."
-    brew install maven
-    log "Maven installed successfully."
+install-maven(){
+    if command -v mvn &>/dev/null; then
+        echo "Maven is already installed."
+    else
+        echo 'We will now install maven, a build tool and dependency manager for java'
+        brew install maven
+    fi
 }
 
-install-mysql() {
-    log "Installing and configuring MySQL..."
-    brew install mysql
-    brew link mysql --force
+install-brew(){
+    if command -v brew &>/dev/null; then
+        echo "Homebrew is already installed."
+    else
+        echo 'We are now going to install homebrew, a package manager for OSX.'
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        if [[ "$(uname -m)" == "arm64" ]]; then
+          echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zprofile
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+        fi
+    fi
+}
 
-    mysql.server start
+install-visual-studio-code(){
+    if command -v code &>/dev/null; then
+        echo "Visual Studio Code is already installed."
+    else
+        echo 'We are now going to install Visual Studio Code.'
+        brew install --cask visual-studio-code
+    fi
+}
 
-    mysql -u root <<-EOF
+setup-ssh-keys(){
+    if [ -f "$HOME/.ssh/id_ed25519" ]; then
+        echo "SSH key already exists."
+    else
+        echo "We're now going to generate an SSH public/private key pair. This key is"
+        echo "like a fingerprint for you on your laptop. We'll use this key for connecting"
+        echo "to GitHub without having to enter a password."
+
+        echo "We will be putting a comment in the SSH key pair as well. Comments can be"
+        echo "used to keep track of different keys on different servers. The comment"
+        echo "will be formatted as [your name]."
+
+        echo "Please enter your name"
+        echo "Example: Casey Edwards"
+
+        read -p $'Enter your name: ' USERSNAME
+        read -p $'Enter your github email: ' GITHUBEMAIL
+          while [[ ! ($GITHUBEMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$) ]];
+            do
+            echo "Invalid email"
+            echo "Please check and re-enter your email when prompted"
+            read -p $'Enter your github email: ' GITHUBEMAIL
+        done
+
+        git config --global user.name "$USERSNAME"
+        git config --global user.email $GITHUBEMAIL
+
+        ssh-keygen -t ed25519 -C "$USERSNAME" -f "$HOME/.ssh/id_ed25519"
+        pbcopy < "$HOME/.ssh/id_ed25519.pub"
+        
+        echo "We've copied your ssh key to the clipboard for you. Now, we are going to take you"
+        echo "to the GitHub website where you will add it as one of your keys by clicking the"
+        echo '"New SSH key" button, giving the key a title (for example: Macbook-Pro), and'
+        echo 'pasting the key into the "key" textarea.'
+        wait-to-continue
+        open https://github.com/settings/ssh
+
+        echo 'Once you have done all of the above, click the big green "Add SSH key" button'
+        echo 'then come back here.'
+        wait-to-continue
+    fi
+}
+
+install-mysql(){
+    if command -v mysql &>/dev/null; then
+        echo "MySQL is already installed."
+    else
+        echo 'We are now going to install and configure MySQL, the database management system we will'
+        echo 'use for this course.'
+        echo 'We will lock down your local MySQL install so that only you can access it'
+        echo 'from this computer'
+
+        brew install mysql
+        brew link mysql --force
+
+        # start the mysql server
+        mysql.server start
+
+        # set a password for the root user, make sure no other users exist, and drop
+        # the test db. Set the root password to 'codeup'
+        mysql -u root <<-EOF
 SET PASSWORD FOR 'root'@'localhost' = 'codeup';
 DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 DELETE FROM mysql.user WHERE User='';
@@ -152,29 +161,35 @@ DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 FLUSH PRIVILEGES;
 EOF
 
-    mysql.server stop
-    log "MySQL installed and configured successfully."
-}
-
-install-visual-studio-code() {
-    log "Installing Visual Studio Code..."
-    brew install --cask visual-studio-code
-    log "Visual Studio Code installed successfully."
+        mysql.server stop
+    fi
 }
 
 install-node() {
-    log "Installing Node.js..."
-    brew install node
-    log "Node.js installed successfully."
-
-    log "Installing Salesforce CLI..."
-    npm install -g @salesforce/cli
-    log "Salesforce CLI installed successfully."
+    if command -v node &>/dev/null; then
+        echo "Node.js is already installed."
+    else
+        echo 'We are now going to install node, which lets us execute javascript outside'
+        echo 'of the browser, and gives us access to the node package manager, npm'
+        brew install node
+    fi
+    
+    # Check for Salesforce CLI
+    if command -v sf &>/dev/null; then
+        echo "Salesforce CLI is already installed."
+    else
+        # Install Salesforce CLI globally
+        echo 'Installing Salesforce CLI globally...'
+        npm install -g @salesforce/cli
+    fi
 }
 
 setup-global-gitignore() {
-    log "Setting up comprehensive global .gitignore file..."
-    cat <<'EOF' >~/.gitignore_global
+    if [ -f ~/.gitignore_global ]; then
+        echo "Global .gitignore file already exists."
+    else
+        echo 'Setting up comprehensive global gitignore file...'
+        cat << 'EOF' > ~/.gitignore_global
 # Created by https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
 
@@ -527,14 +542,16 @@ xcuserdata/
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
+
 EOF
 
     git config --global core.excludesfile ~/.gitignore_global
-    log "Global .gitignore file has been set up with comprehensive rules."
+    echo 'Global .gitignore file has been set up with comprehensive rules.'
+    
 }
 
-script-results() {
-    log "Checking installed tools..."
+script-results(){
+    echo "🔍 Checking installed tools..."
 
     tools=(
         "brew:Homebrew"
@@ -551,7 +568,7 @@ script-results() {
     not_installed=()
 
     for tool in "${tools[@]}"; do
-        IFS=":" read -r command name <<<"$tool"
+        IFS=":" read -r command name <<< "$tool"
         if command -v $command >/dev/null 2>&1; then
             installed+=("$name")
         else
@@ -559,16 +576,68 @@ script-results() {
         fi
     done
 
-    log "✅ Successfully installed:"
-    printf "   %s\n" "${installed[@]}" | tee -a setup.log
+    echo "✅ Successfully installed or already present:"
+    printf "   %s\n" "${installed[@]}"
 
     if [ ${#not_installed[@]} -eq 0 ]; then
-        log "🎉 Great job! All tools are present and accounted for!"
+        echo "🎉 Great job! All tools are present and accounted for!"
     else
-        log "❗ The following tools were not installed or not found:"
-        printf "   %s\n" "${not_installed[@]}" | tee -a setup.log
-        log "You might want to install these manually or re-run the script."
+        echo "❗ The following tools were not found:"
+        printf "   %s\n" "${not_installed[@]}"
+        echo "You might want to install these manually or check your system PATH."
     fi
 
-    log "💡 Pro Tip: Remember to set up your global .gitignore file!"
+    echo "
+💡 Pro Tip: Remember to keep your global .gitignore file updated!
+   Visit https://www.toptal.com/developers/gitignore for the latest recommendations.
+    "
 }
+
+setup() {
+    echo '🚀 Welcome to the Development Environment Setup Script!'
+    echo 'We will check for and install (if necessary) the following tools:'
+    echo '  - Xcode Command Line Tools   - Homebrew'
+    echo '  - Java 17                    - Maven'
+    echo '  - Tomcat                     - MySQL'
+    echo '  - Node.js (includes npm)     - Visual Studio Code'
+    echo '  - Salesforce CLI'
+    echo '  - SSH Keys (for GitHub)'
+    echo
+    echo 'We will also set up a comprehensive global .gitignore file.'
+    echo
+    echo '*Note*: If any of these tools are already installed, we will not reinstall them.'
+    echo
+    echo 'During this process, you may be asked for your password several times.'
+    echo 'This is the password you use to log into your computer.'
+    echo 'When you type it in, you will not see any output in the terminal. This is normal.'
+    echo
+    wait-to-continue
+
+    install-xcode
+    install-brew
+    setup-ssh-keys
+    install-java
+    install-maven
+    install-tomcat
+    install-mysql
+    install-visual-studio-code
+    install-node
+    setup-global-gitignore
+
+    if git config --global core.editor >/dev/null ; then
+        echo 'It looks like you already have a preferred editor setup for git.'
+        echo 'We will not modify this.'
+    else
+        echo 'Setting default git editor to nano...'
+        git config --global core.editor nano
+    fi
+
+    echo "🎊 Setup complete! Your development environment is ready to go!"
+    echo "🌟 Happy coding! Remember to keep your tools updated regularly."
+
+    script-results
+}
+
+# Run the setup
+setup
+
