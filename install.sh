@@ -3,7 +3,7 @@
 # Comprehensive setup script for MacOS development environment
 # ============================================================
 
-set -e  # Exit immediately if a command exits with a non-zero status
+set -e # Exit immediately if a command exits with a non-zero status
 trap 'echo "An error occurred. Exiting..."; exit 1' ERR
 
 # Logging function
@@ -78,7 +78,7 @@ install-brew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" &
     show_spinner $!
     if [[ "$(uname -m)" == "arm64" ]]; then
-        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zprofile
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>$HOME/.zprofile
         eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
     log "Homebrew installed successfully."
@@ -103,8 +103,8 @@ setup-ssh-keys() {
     git config --global user.email $GITHUBEMAIL
 
     ssh-keygen -t ed25519 -C "$USERSNAME" -f "$HOME/.ssh/id_ed25519"
-    pbcopy < "$HOME/.ssh/id_ed25519.pub"
-    
+    pbcopy <"$HOME/.ssh/id_ed25519.pub"
+
     log "SSH key generated and copied to clipboard."
     open https://github.com/settings/ssh
     wait-to-continue
@@ -166,7 +166,7 @@ install-node() {
     log "Installing Node.js..."
     brew install node
     log "Node.js installed successfully."
-    
+
     log "Installing Salesforce CLI..."
     npm install -g @salesforce/cli
     log "Salesforce CLI installed successfully."
@@ -174,7 +174,7 @@ install-node() {
 
 setup-global-gitignore() {
     log "Setting up comprehensive global .gitignore file..."
-    cat << 'EOF' > ~/.gitignore_global
+    cat <<'EOF' >~/.gitignore_global
 # Created by https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,visualstudiocode,node,xcode,java,homebrew,maven,salesforce,salesforcedx,ssh,git
 
@@ -551,7 +551,7 @@ script-results() {
     not_installed=()
 
     for tool in "${tools[@]}"; do
-        IFS=":" read -r command name <<< "$tool"
+        IFS=":" read -r command name <<<"$tool"
         if command -v $command >/dev/null 2>&1; then
             installed+=("$name")
         else
@@ -571,4 +571,4 @@ script-results() {
     fi
 
     log "💡 Pro Tip: Remember to set up your global .gitignore file!"
-    
+}
