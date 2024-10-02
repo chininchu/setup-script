@@ -183,6 +183,30 @@ install-node() {
     fi
 }
 
+install-additional-apps() {
+    echo 'Installing additional applications...'
+
+    apps=(
+        "zoom"
+        "slack"
+        "drawio"
+        "cakebrew"
+        "google-chrome" # For Google Meet access
+        "protonvpn"
+    )
+
+    for app in "${apps[@]}"; do
+        if brew list --cask "$app" &>/dev/null; then
+            echo "$app is already installed."
+        else
+            echo "Installing $app..."
+            brew install --cask "$app"
+        fi
+    done
+
+    echo "Google Meet can be accessed through Google Chrome."
+}
+
 setup-global-gitignore() {
     if [ -f ~/.gitignore_global ]; then
         echo "Global .gitignore file already exists."
@@ -560,6 +584,12 @@ script-results() {
         "mysql:MySQL"
         "code:Visual Studio Code"
         "sf:Salesforce CLI"
+        "zoom:Zoom"
+        "slack:Slack"
+        "drawio:Draw.io"
+        "cakebrew:CakeBrew"
+        "google-chrome:Google Chrome"
+        "protonvpn:ProtonVPN"
     )
 
     installed=()
@@ -567,7 +597,7 @@ script-results() {
 
     for tool in "${tools[@]}"; do
         IFS=":" read -r command name <<<"$tool"
-        if command -v $command >/dev/null 2>&1; then
+        if command -v $command >/dev/null 2>&1 || brew list --cask $command >/dev/null 2>&1; then
             installed+=("$name")
         else
             not_installed+=("$name")
@@ -600,6 +630,7 @@ setup() {
     echo '  - Node.js (includes npm)     - Visual Studio Code'
     echo '  - Salesforce CLI'
     echo '  - SSH Keys (for GitHub)'
+    echo '  - Additional apps: Zoom, Slack, Draw.io, CakeBrew, Google Chrome (for Google Meet), ProtonVPN'
     echo
     echo 'We will also set up a comprehensive global .gitignore file.'
     echo
@@ -620,6 +651,7 @@ setup() {
     install-mysql
     install-visual-studio-code
     install-node
+    install-additional-apps # Add this line to call the new function
     setup-global-gitignore
 
     if git config --global core.editor >/dev/null; then
