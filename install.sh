@@ -713,7 +713,6 @@ setup() {
 
     script-results
 
-    
 }
 
 # Run the setup
