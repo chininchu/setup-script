@@ -119,13 +119,37 @@ setup-ssh-keys() {
         git config --global user.name "$USERSNAME"
         git config --global user.email $GITHUBEMAIL
 
-        ssh-keygen -t ed25519 -C "$USERSNAME" -f "$HOME/.ssh/id_ed25519"
+        ssh-keygen -t ed25519 -C "$GITHUBEMAIL" -f "$HOME/.ssh/id_ed25519"
+
+        # Start the ssh-agent in the background
+        eval "$(ssh-agent -s)"
+
+        # Create or modify the ~/.ssh/config file
+        if [ ! -f "$HOME/.ssh/config" ]; then
+            touch "$HOME/.ssh/config"
+        fi
+
+        cat << EOF >> "$HOME/.ssh/config"
+
+Host github.com
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+EOF
+
+        # Add the SSH key to the ssh-agent and store passphrase in the keychain
+        if [[ $(sw_vers -productVersion) > "12.0.0" ]]; then
+            ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+        else
+            ssh-add -K ~/.ssh/id_ed25519
+        fi
+
         pbcopy <"$HOME/.ssh/id_ed25519.pub"
 
-        echo "We've copied your ssh key to the clipboard for you. Now, we are going to take you"
-        echo "to the GitHub website where you will add it as one of your keys by clicking the"
-        echo '"New SSH key" button, giving the key a title (for example: Macbook-Pro), and'
-        echo 'pasting the key into the "key" textarea.'
+        echo "We've copied your ssh key to the clipboard for you and added it to your keychain."
+        echo "Now, we are going to take you to the GitHub website where you will add it as"
+        echo 'one of your keys by clicking the "New SSH key" button, giving the key a title'
+        echo '(for example: Macbook-Pro), and pasting the key into the "key" textarea.'
         wait-to-continue
         open https://github.com/settings/ssh
 
