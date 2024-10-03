@@ -712,6 +712,8 @@ setup() {
     echo "🌟 Happy coding! Remember to keep your tools updated regularly."
 
     script-results
+
+    
 }
 
 # Run the setup
