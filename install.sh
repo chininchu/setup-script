@@ -129,7 +129,7 @@ setup-ssh-keys() {
             touch "$HOME/.ssh/config"
         fi
 
-        cat << EOF >> "$HOME/.ssh/config"
+        cat <<EOF >>"$HOME/.ssh/config"
 
 Host github.com
   AddKeysToAgent yes
