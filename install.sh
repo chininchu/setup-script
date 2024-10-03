@@ -95,7 +95,7 @@ install-visual-studio-code() {
 
 setup-ssh-keys() {
     if [ -f "$HOME/.ssh/id_ed25519" ]; then
-        echo "SSH key already exists."
+        echo "SSH key already exists. Ensuring it's properly configured..."
     else
         echo "We're now going to generate an SSH public/private key pair. This key is"
         echo "like a fingerprint for you on your laptop. We'll use this key for connecting"
@@ -103,12 +103,8 @@ setup-ssh-keys() {
 
         echo "We will be putting a comment in the SSH key pair as well. Comments can be"
         echo "used to keep track of different keys on different servers. The comment"
-        echo "will be formatted as [your name]."
+        echo "will be formatted as [your email]."
 
-        echo "Please enter your name"
-        echo "Example: Casey Edwards"
-
-        read -p $'Enter your name: ' USERSNAME
         read -p $'Enter your github email: ' GITHUBEMAIL
         while [[ ! ($GITHUBEMAIL =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$) ]]; do
             echo "Invalid email"
@@ -116,25 +112,75 @@ setup-ssh-keys() {
             read -p $'Enter your github email: ' GITHUBEMAIL
         done
 
-        git config --global user.name "$USERSNAME"
-        git config --global user.email $GITHUBEMAIL
+        ssh-keygen -t ed25519 -C "$GITHUBEMAIL" -f "$HOME/.ssh/id_ed25519"
+    fi
 
-        ssh-keygen -t ed25519 -C "$USERSNAME" -f "$HOME/.ssh/id_ed25519"
+    # Ensure SSH agent is running
+    eval "$(ssh-agent -s)"
+
+    # Create or modify the ~/.ssh/config file
+    if [ ! -f "$HOME/.ssh/config" ]; then
+        touch "$HOME/.ssh/config"
+    fi
+
+    cat <<EOF >>$HOME/.ssh/config
+
+Host github.com
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+EOF
+
+    # Add the SSH key to the ssh-agent and store passphrase in the keychain
+    if [[ $(sw_vers -productVersion) > "12.0.0" ]]; then
+        ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+    else
+        ssh-add -K ~/.ssh/id_ed25519
+    fi
+
+    # Set up automatic SSH agent startup in shell configuration
+    SHELL_CONFIG_FILE="$HOME/.zshrc"
+    if [ -f "$HOME/.bash_profile" ]; then
+        SHELL_CONFIG_FILE="$HOME/.bash_profile"
+    fi
+
+    if ! grep -q "Start SSH agent automatically" "$SHELL_CONFIG_FILE"; then
+        cat <<EOF >>"$SHELL_CONFIG_FILE"
+
+# Start SSH agent automatically
+if [ -z "\$SSH_AUTH_SOCK" ] ; then
+    eval "\$(ssh-agent -s)"
+    ssh-add --apple-use-keychain ~/.ssh/id_ed25519 2>/dev/null
+fi
+EOF
+        echo "Added SSH agent autostart configuration to $SHELL_CONFIG_FILE"
+    else
+        echo "SSH agent autostart configuration already exists in $SHELL_CONFIG_FILE"
+    fi
+
+    # Reload shell configuration
+    source "$SHELL_CONFIG_FILE"
+
+    echo "SSH key setup complete. Testing connection to GitHub..."
+    ssh -T git@github.com
+
+    if [ $? -eq 1 ]; then
+        echo "SSH connection to GitHub successful!"
         pbcopy <"$HOME/.ssh/id_ed25519.pub"
-
-        echo "We've copied your ssh key to the clipboard for you. Now, we are going to take you"
-        echo "to the GitHub website where you will add it as one of your keys by clicking the"
-        echo '"New SSH key" button, giving the key a title (for example: Macbook-Pro), and'
-        echo 'pasting the key into the "key" textarea.'
-        wait-to-continue
-        open https://github.com/settings/ssh
-
-        echo 'Once you have done all of the above, click the big green "Add SSH key" button'
-        echo 'then come back here.'
-        wait-to-continue
+        echo "Your public SSH key has been copied to the clipboard."
+        echo "Please add it to your GitHub account if you haven't already:"
+        echo "1. Go to GitHub.com and log in to your account."
+        echo "2. Click your profile photo, then click Settings."
+        echo "3. In the user settings sidebar, click SSH and GPG keys."
+        echo "4. Click New SSH key or Add SSH key."
+        echo "5. In the 'Title' field, add a descriptive label for the new key."
+        echo "6. Paste your key into the 'Key' field."
+        echo "7. Click Add SSH key."
+        echo "Once you've added the key to your GitHub account, you should be able to push without entering your passphrase."
+    else
+        echo "There was an issue connecting to GitHub. Please check your SSH key configuration."
     fi
 }
-
 install-mysql() {
     if command -v mysql &>/dev/null; then
         echo "MySQL is already installed."
@@ -666,6 +712,7 @@ setup() {
     echo "🌟 Happy coding! Remember to keep your tools updated regularly."
 
     script-results
+
 }
 
 # Run the setup
